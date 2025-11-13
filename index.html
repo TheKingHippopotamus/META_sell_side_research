@@ -11,6 +11,9 @@
       --muted: #6b7280;
       --border: #e5e7eb;
       --accent-line: #3b82f6;
+      --btn-bg: #111827;
+      --btn-bg-hover: #374151;
+      --btn-text: #f9fafb;
     }
 
     * {
@@ -24,6 +27,37 @@
       background: var(--bg);
       color: #111827;
       line-height: 1.5;
+    }
+
+    /* NEW – סרגל כפתורים */
+    .toolbar {
+      max-width: 800px;
+      margin: 0 auto 12px auto;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:hover {
+      background: var(--btn-bg-hover);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
     }
 
     .page {
@@ -48,7 +82,7 @@
     }
 
     .logo {
-      height: 90px; /* אפשר לשחק עם הגודל */
+      height: 90px;
       width: auto;
       display: block;
     }
@@ -169,23 +203,57 @@
     .signature-firm {
       color: var(--muted);
     }
+/* HERO IMAGE (screen) */
+.hero-container {
+  margin: 20px auto 8px;
+  max-width: 620px;      /* מגביל את הרוחב בתוך הדוח */
+  text-align: center;
+}
 
-    @media print {
-      body {
-        background: #ffffff;
-        padding: 0;
-      }
-      .page {
-        box-shadow: none;
-        border-radius: 0;
-        max-width: 100%;
-        padding: 32px 40px;
-      }
-    }
+.hero-image {
+  width: 50%;           /* יתאים לרוחב של ה-container, לא לכל העמוד */
+  height: auto;
+  max-height: 200px;     /* שלא תהיה ענקית אנכית */
+  object-fit: cover;     /* חיתוך עדין אם צריך */
+  border-radius: 20px;
+  display: block;
+  margin: 0 auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+}
+
+	
+
+   @media print {
+  body {
+    background: #ffffff;
+    padding: 0;
+  }
+  .page {
+    box-shadow: none;
+    border-radius: 0;
+    max-width: 100%;
+    padding: 32px 40px;
+  }
+  .toolbar {
+    display: none;
+  }
+}
+
   </style>
 </head>
 <body>
-  <div class="page">
+
+  <!-- NEW – סרגל כפתורים -->
+  <div class="toolbar">
+    <button class="btn" id="downloadPngBtn">
+      ⬇ Download PNG
+    </button>
+    <button class="btn" onclick="window.print()">
+      🖨 Print / Save as PDF
+    </button>
+  </div>
+
+  <div class="page" id="reportPage">
     <header>
       <div class="header-top">
         <img src="logo.png" alt="Hippopotamus Research Logo" class="logo" />
@@ -198,9 +266,16 @@
             <span><strong>Exchange:</strong> NASDAQ</span>
             <span><strong>Sector:</strong> Communication Services</span>
           </div>
+
         </div>
       </div>
     </header>
+<!-- HERO IMAGE SECTION -->
+<div class="hero-container">
+  <img src="mark.png"
+       alt="Meta illustration"
+       class="hero-image" />
+</div>
 
     <section class="highlight-bar">
       <div class="highlight-item">
@@ -284,5 +359,29 @@
       <div class="signature-firm">Hippopotamus Research</div>
     </section>
   </div>
+
+  <!-- NEW – ספריית html2canvas מה־CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <!-- NEW – קוד צילום והורדה -->
+  <script>
+    document.getElementById('downloadPngBtn').addEventListener('click', function () {
+      const report = document.getElementById('reportPage');
+
+      html2canvas(report, {
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        scale: 2  // איכות גבוהה יותר
+      }).then(function (canvas) {
+        const link = document.createElement('a');
+        link.download = 'META_Hippopotamus_Research.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }).catch(function (err) {
+        console.error('Screenshot failed:', err);
+        alert('Screenshot failed – check console for details.');
+      });
+    });
+  </script>
 </body>
 </html>
